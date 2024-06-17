@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
+
 import java.util.stream.Collectors;
 
 public class OrderBook {
@@ -37,15 +38,10 @@ public class OrderBook {
 
     public void removeOrder(long orderId) {
         orderActionQueue.add(new RemoveAction(orderId));
-        //orderLookup.remove(orderId);
     }
 
     public void modifyOrder(long orderId, long newSize) {
         orderActionQueue.add(new ModifyAction(orderId, newSize));
-        OrderEntry oldOrderEntry = orderLookup.get(orderId);
-        Order order = oldOrderEntry.getOrder();
-        Order newOrder = new Order(order.getId(), order.getPrice(), order.getSide(), newSize);
-        OrderEntry newOrderEntry = new OrderEntry(newOrder, oldOrderEntry.getOrderTime());
     }
 
     public void processOrderActions() {
@@ -54,17 +50,14 @@ public class OrderBook {
                 OrderAction orderAction = orderActionQueue.poll();
                 switch (orderAction) {
                     case AddAction addAction -> {
-                        LOGGER.info("Processing AddAction");
                         processAddAction(addAction);
                         break;
                     }
                     case RemoveAction removeAction -> {
-                        LOGGER.info("Processing RemoveAction");
                         processRemoveAction(removeAction);
                         break;
                     }
                     case ModifyAction modifyAction -> {
-                        LOGGER.info("Processing ModifyAction");
                         processModifyAction(modifyAction);
                     }
                     case null, default -> LOGGER.warning("Unknown OrderAction type");
@@ -78,16 +71,23 @@ public class OrderBook {
         return side == Side.BID ? bidLevelMap : offerLevelMap;
     }
 
-    private void processModifyAction(ModifyAction modifyAction) {
-        OrderEntry orderEntry = orderLookup.get(modifyAction.getOrderId());
-        Order oldOrder = orderEntry.getOrder();
-        Order newOrder = new Order(oldOrder.getId(), oldOrder.getPrice(), oldOrder.getSide(), modifyAction.getNewSize());
-        orderEntry.setOrder(newOrder);
+    private void processAddAction(AddAction addAction) {
+        OrderEntry orderEntry = addAction.getOrderEntry();
+        if(orderLookup.containsKey(orderEntry.getOrder().getId())) {
+            throw new IllegalArgumentException("Order id " + orderEntry.getOrder().getId() + " already exists");
+        }
+        orderLookup.put(orderEntry.getOrder().getId(), orderEntry);
+        ConcurrentNavigableMap<Integer, OrderLevelBucket> orderLevelMap = getOrderLevelMap(orderEntry.getSide());
+        OrderLevelBucket orderLevelBucket = orderLevelMap.computeIfAbsent(orderEntry.getPrice(), p -> new OrderLevelBucket(p, orderEntry.getSide()));
+        orderLevelBucket.addOrderEntry(orderEntry);
     }
 
     private void processRemoveAction(RemoveAction removeAction) {
         long orderId = removeAction.getOrderId();
         OrderEntry orderEntry = orderLookup.get(orderId);
+        if (orderEntry == null) {
+            return;
+        }
         ConcurrentNavigableMap<Integer, OrderLevelBucket> orderLevelMap = getOrderLevelMap(orderEntry.getSide());
         OrderLevelBucket orderLevelBucket = orderLevelMap.get(orderEntry.getPrice());
         orderLevelBucket.removeOrderEntry(orderEntry.getOrder().getId());
@@ -97,12 +97,11 @@ public class OrderBook {
         orderLookup.remove(orderEntry.getOrder().getId());
     }
 
-    private void processAddAction(AddAction addAction) {
-        OrderEntry orderEntry = addAction.getOrderEntry();
-        orderLookup.put(orderEntry.getOrder().getId(), orderEntry);
-        ConcurrentNavigableMap<Integer, OrderLevelBucket> orderLevelMap = getOrderLevelMap(orderEntry.getSide());
-        OrderLevelBucket orderLevelBucket = orderLevelMap.computeIfAbsent(orderEntry.getPrice(), p -> new OrderLevelBucket(p, orderEntry.getSide()));
-        orderLevelBucket.addOrderEntry(orderEntry);
+    private void processModifyAction(ModifyAction modifyAction) {
+        OrderEntry orderEntry = orderLookup.get(modifyAction.getOrderId());
+        Order oldOrder = orderEntry.getOrder();
+        Order newOrder = new Order(oldOrder.getId(), oldOrder.getPrice(), oldOrder.getSide(), modifyAction.getNewSize());
+        orderEntry.setOrder(newOrder);
     }
 
     /**
@@ -111,7 +110,7 @@ public class OrderBook {
      * @param level
      * @return price of the level
      */
-    public synchronized long getLevelPrice(Side side, int level) {
+    public synchronized double getLevelPrice(Side side, int level) {
         ConcurrentNavigableMap<Integer, OrderLevelBucket> orderLevelMap = getOrderLevelMap(side);
         if (level < 0 || level >= orderLevelMap.size()) {
             throw new IllegalArgumentException("Invalid level " + level);
@@ -121,7 +120,7 @@ public class OrderBook {
         for (int i = 0; i <= level; i++) {
             key = iterator.next();
         }
-        return orderLevelMap.get(key).getPrice();
+        return orderLevelMap.get(key).getOriginalPrice();
     }
 
     /**
@@ -130,7 +129,7 @@ public class OrderBook {
      * @param level
      * @return price of the level
      */
-    public long getLevelPrice(char side, int level) {
+    public double getLevelPrice(char side, int level) {
         return getLevelPrice(Side.fromChar(side), level);
     }
 

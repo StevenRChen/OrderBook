@@ -15,7 +15,11 @@ public class OrderLevelBucket {
     }
 
     public long getPrice() {
-        return price / 100;
+        return price;
+    }
+
+    public double getOriginalPrice() {
+        return price / 100.0;
     }
 
     public Side getSide() {

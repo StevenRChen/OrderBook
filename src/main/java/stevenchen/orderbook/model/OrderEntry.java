@@ -4,9 +4,9 @@ import java.time.Instant;
 
 public class OrderEntry {
     private Order order;
-    private Instant orderTime;
-    private Side side;
-    private int price;
+    private final Instant orderTime;
+    private final Side side;
+    private final int price;
 
     public OrderEntry(Order order, Instant orderTime) {
         if (order == null) {
@@ -31,6 +31,10 @@ public class OrderEntry {
 
     public int getPrice() {
         return price;
+    }
+
+    public double getOriginalPrice() {
+        return price / 100.0;
     }
 
     public Side getSide() {
