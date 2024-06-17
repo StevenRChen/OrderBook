@@ -1,4 +1,4 @@
-package stevenchen.orderbook;
+package stevenchen.orderbook.model;
 
 public class Order{
     private long id; // i d o f o r d e r
