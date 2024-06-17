@@ -2,6 +2,7 @@ package stevenchen.orderbook;
 
 import org.junit.jupiter.api.Test;
 import stevenchen.orderbook.model.Order;
+import stevenchen.orderbook.model.Side;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

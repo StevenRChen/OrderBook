@@ -1,4 +1,4 @@
-package stevenchen.orderbook;
+package stevenchen.orderbook.model;
 
 import org.junit.jupiter.api.Test;
 

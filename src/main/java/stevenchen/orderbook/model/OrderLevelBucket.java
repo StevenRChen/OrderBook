@@ -1,9 +1,6 @@
 package stevenchen.orderbook.model;
 
-import stevenchen.orderbook.Side;
-
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 public class OrderLevelBucket {

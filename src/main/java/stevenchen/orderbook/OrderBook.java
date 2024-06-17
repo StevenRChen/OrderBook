@@ -4,6 +4,7 @@ import stevenchen.orderbook.action.*;
 import stevenchen.orderbook.model.Order;
 import stevenchen.orderbook.model.OrderEntry;
 import stevenchen.orderbook.model.OrderLevelBucket;
+import stevenchen.orderbook.model.Side;
 
 import java.time.Instant;
 import java.util.*;

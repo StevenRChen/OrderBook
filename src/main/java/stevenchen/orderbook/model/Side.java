@@ -1,4 +1,4 @@
-package stevenchen.orderbook;
+package stevenchen.orderbook.model;
 
 public enum Side {
     BID('B'), OFFER('O');

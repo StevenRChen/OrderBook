@@ -1,7 +1,5 @@
 package stevenchen.orderbook.model;
 
-import stevenchen.orderbook.Side;
-
 import java.time.Instant;
 
 public class OrderEntry {
