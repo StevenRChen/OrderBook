@@ -44,16 +44,16 @@ public class OrderBookTest {
         Order order = new Order(100, 100.0, 'B', 100);
         orderBook.addOrder(order);
         order = new Order(102, 102.0, 'B', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(101, 101.0, 'B', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(103, 103.0, 'O', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         // two offer orders at price 103
         order = new Order(104, 103.0, 'O', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(106, 106.0, 'O', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         orderBook.drainAndProcessOrderActions();
         assertEquals(102.0, orderBook.getLevelPrice('B', 0));
         assertEquals(102.0, orderBook.getLevelPrice(Side.BID, 0));
@@ -70,9 +70,9 @@ public class OrderBookTest {
         Order order = new Order(100, 100.1, 'B', 100);
         orderBook.addOrder(order);
         order = new Order(102, 102.1, 'B', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(101, 101.1, 'B', 100);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         orderBook.drainAndProcessOrderActions();
         assertEquals(102.1, orderBook.getLevelPrice('B', 0));
         assertEquals(102.1, orderBook.getLevelPrice(Side.BID, 0));
@@ -86,16 +86,16 @@ public class OrderBookTest {
         Order order = new Order(100, 100.0, 'B', 100);
         orderBook.addOrder(order);
         order = new Order(102, 102.0, 'B', 200);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(101, 101.0, 'B', 300);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(103, 103.0, 'O', 400);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         // two offer orders at price 103
         order = new Order(104, 103.0, 'O', 500);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(106, 106.0, 'O', 600);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         orderBook.drainAndProcessOrderActions();
         assertEquals(200, orderBook.getLevelTotalSize('B', 0));
         assertEquals(200, orderBook.getLevelTotalSize(Side.BID, 0));

@@ -9,7 +9,7 @@ import static java.lang.Thread.sleep;
 public class StressTest {
     private static final Logger LOGGER = Logger.getLogger(StressTest.class.getName());
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         OrderBook orderBook = new OrderBook();
         for (int i = 0; i < 1000000; i++) {
             double price = Math.round(Math.random() * 10000) / 100.0;
