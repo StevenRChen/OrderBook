@@ -22,7 +22,9 @@ Allowing single thread access also addresses the thread safety issue of LinkedHa
 
 ## Complexity Analysis
 I will assign the number of entry to be N, the number of levels on one side to be L, input argument level to be l, and the average number of orders in a level to be M.
+
 N = L * M
+
 Number of levels L should be a relatively small number, as most of the orders are near the market price.
 
 addOrder/deleteOrder/modifyOrder functions themselves are O(1) operations, as they only insert the action into the BlockingQueue.
