@@ -16,12 +16,12 @@ public class OrderBookTest {
         OrderBook orderBook = new OrderBook();
         Order order = new Order(100, 100.0, 'B', 100);
         orderBook.addOrder(order);
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(1, orderBook.getOrdersCount());
 
         order = new Order(101, 101.0, 'O', 100);
         orderBook.addOrder(order);
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(2, orderBook.getOrdersCount());
     }
 
@@ -30,11 +30,11 @@ public class OrderBookTest {
         OrderBook orderBook = new OrderBook();
         Order order = new Order(100, 100.0, 'B', 100);
         orderBook.addOrder(order);
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(1, orderBook.getOrdersCount());
 
         orderBook.removeOrder(100);
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(0, orderBook.getOrdersCount());
     }
 
@@ -54,7 +54,7 @@ public class OrderBookTest {
         orderBook.addOrder(order);;
         order = new Order(106, 106.0, 'O', 100);
         orderBook.addOrder(order);;
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(102.0, orderBook.getLevelPrice('B', 0));
         assertEquals(102.0, orderBook.getLevelPrice(Side.BID, 0));
         assertEquals(101.0, orderBook.getLevelPrice(Side.BID, 1));
@@ -73,7 +73,7 @@ public class OrderBookTest {
         orderBook.addOrder(order);;
         order = new Order(101, 101.1, 'B', 100);
         orderBook.addOrder(order);;
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(102.1, orderBook.getLevelPrice('B', 0));
         assertEquals(102.1, orderBook.getLevelPrice(Side.BID, 0));
         assertEquals(101.1, orderBook.getLevelPrice(Side.BID, 1));
@@ -96,7 +96,7 @@ public class OrderBookTest {
         orderBook.addOrder(order);;
         order = new Order(106, 106.0, 'O', 600);
         orderBook.addOrder(order);;
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
         assertEquals(200, orderBook.getLevelTotalSize('B', 0));
         assertEquals(200, orderBook.getLevelTotalSize(Side.BID, 0));
         assertEquals(300, orderBook.getLevelTotalSize(Side.BID, 1));
@@ -122,10 +122,10 @@ public class OrderBookTest {
         orderBook.addOrder(order);;
         order = new Order(106, 106.0, 'O', 600);
         orderBook.addOrder(order);;
-        orderBook.processOrderActions();
+        orderBook.drainAndProcessOrderActions();
 
         List<Order> bidOrders = orderBook.getAllOrdersOnSide(Side.BID);
-        List<Order> offerOrders = orderBook.getAllOrdersOnSide(Side.OFFER);
+        List<Order> offerOrders = orderBook.getAllOrdersOnSide('o');
         bidOrders.forEach(o -> {
             assertEquals('B', o.getSide());
         });
@@ -135,9 +135,4 @@ public class OrderBookTest {
         assertArrayEquals(bidOrders.stream().mapToLong(Order::getId).toArray(), new long[]{102, 101, 100});
         assertArrayEquals(offerOrders.stream().mapToLong(Order::getId).toArray(), new long[]{103, 104, 106});
     }
-
-    void testDecimalPrice() {
-
-    }
-
 }

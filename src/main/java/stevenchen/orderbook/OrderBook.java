@@ -8,10 +8,7 @@ import stevenchen.orderbook.model.Side;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 import java.util.stream.Collectors;
@@ -25,7 +22,7 @@ public class OrderBook {
     private final ConcurrentNavigableMap<Integer, OrderLevelBucket> offerLevelMap;
 
     public OrderBook() {
-        orderLookup = new HashMap<>();
+        orderLookup = new ConcurrentHashMap<>();
         orderActionQueue = new LinkedBlockingQueue<>();
         bidLevelMap = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
         offerLevelMap = new ConcurrentSkipListMap<>();
@@ -44,26 +41,38 @@ public class OrderBook {
         orderActionQueue.add(new ModifyAction(orderId, newSize));
     }
 
-    public void processOrderActions() {
+    private void processOrderAction(OrderAction orderAction) {
+        switch (orderAction) {
+            case AddAction addAction -> {
+                processAddAction(addAction);
+                break;
+            }
+            case RemoveAction removeAction -> {
+                processRemoveAction(removeAction);
+                break;
+            }
+            case ModifyAction modifyAction -> {
+                processModifyAction(modifyAction);
+            }
+            case null, default -> LOGGER.warning("Unknown OrderAction type");
+        }
+    }
+
+    public void drainAndProcessOrderActions() {
         while (!orderActionQueue.isEmpty()) {
             synchronized (this) {
                 OrderAction orderAction = orderActionQueue.poll();
-                switch (orderAction) {
-                    case AddAction addAction -> {
-                        processAddAction(addAction);
-                        break;
-                    }
-                    case RemoveAction removeAction -> {
-                        processRemoveAction(removeAction);
-                        break;
-                    }
-                    case ModifyAction modifyAction -> {
-                        processModifyAction(modifyAction);
-                    }
-                    case null, default -> LOGGER.warning("Unknown OrderAction type");
-                }
+                processOrderAction(orderAction);
             }
+        }
+    }
 
+    public void continuousProcessOrderActions() throws InterruptedException {
+        while (true) {
+            synchronized (this) {
+                OrderAction orderAction = orderActionQueue.take();
+                processOrderAction(orderAction);
+            }
         }
     }
 
