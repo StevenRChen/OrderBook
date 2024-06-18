@@ -43,17 +43,9 @@ public class OrderBook {
 
     private void processOrderAction(OrderAction orderAction) {
         switch (orderAction) {
-            case AddAction addAction -> {
-                processAddAction(addAction);
-                break;
-            }
-            case RemoveAction removeAction -> {
-                processRemoveAction(removeAction);
-                break;
-            }
-            case ModifyAction modifyAction -> {
-                processModifyAction(modifyAction);
-            }
+            case AddAction addAction -> processAddAction(addAction);
+            case RemoveAction removeAction -> processRemoveAction(removeAction);
+            case ModifyAction modifyAction -> processModifyAction(modifyAction);
             case null, default -> LOGGER.warning("Unknown OrderAction type");
         }
     }
@@ -115,8 +107,6 @@ public class OrderBook {
 
     /**
      * Get the price of a specific level in the order book.
-      * @param side
-     * @param level
      * @return price of the level
      */
     public synchronized double getLevelPrice(Side side, int level) {
@@ -134,8 +124,6 @@ public class OrderBook {
 
     /**
      * Get the price of a specific level in the order book, taking a char as the side.
-     * @param side
-     * @param level
      * @return price of the level
      */
     public double getLevelPrice(char side, int level) {
@@ -144,8 +132,6 @@ public class OrderBook {
 
     /**
      * Get the total size of a specific level in the order book.
-     * @param side
-     * @param level
      * @return total size of the level
      */
     public synchronized long getLevelTotalSize(Side side, int level) {
@@ -164,8 +150,6 @@ public class OrderBook {
 
     /**
      * Get the total size of a specific level in the order book, taking a char as the side.
-     * @param side
-     * @param level
      * @return total size of the level
      */
     public long getLevelTotalSize(char side, int level) {
@@ -174,7 +158,6 @@ public class OrderBook {
 
     /**
      * Get all orders on a specific side of the order book, in level then time order.
-     * @param side
      * @return list of orders
      */
     public synchronized List<Order> getAllOrdersOnSide(Side side) {
@@ -187,7 +170,6 @@ public class OrderBook {
 
     /**
      * Get all orders on a specific side of the order book, in level then time order, taking a char as the side.
-     * @param side
      * @return list of orders
      */
     public List<Order> getAllOrdersOnSide(char side) {
