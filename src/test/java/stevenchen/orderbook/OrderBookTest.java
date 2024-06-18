@@ -112,26 +112,22 @@ public class OrderBookTest {
         Order order = new Order(100, 100.0, 'B', 100);
         orderBook.addOrder(order);
         order = new Order(102, 102.0, 'B', 200);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(101, 101.0, 'B', 300);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(103, 103.0, 'O', 400);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         // two offer orders at price 103
         order = new Order(104, 103.0, 'O', 500);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         order = new Order(106, 106.0, 'O', 600);
-        orderBook.addOrder(order);;
+        orderBook.addOrder(order);
         orderBook.drainAndProcessOrderActions();
 
         List<Order> bidOrders = orderBook.getAllOrdersOnSide(Side.BID);
         List<Order> offerOrders = orderBook.getAllOrdersOnSide('o');
-        bidOrders.forEach(o -> {
-            assertEquals('B', o.getSide());
-        });
-        offerOrders.forEach(o -> {
-            assertEquals('O', o.getSide());
-        });
+        bidOrders.forEach(o -> assertEquals('B', o.getSide()));
+        offerOrders.forEach(o -> assertEquals('O', o.getSide()));
         assertArrayEquals(bidOrders.stream().mapToLong(Order::getId).toArray(), new long[]{102, 101, 100});
         assertArrayEquals(offerOrders.stream().mapToLong(Order::getId).toArray(), new long[]{103, 104, 106});
     }
