@@ -178,7 +178,7 @@ public class OrderBook {
 
     /**
      * Get the total order count in the order book.
-     * @return
+     * @return return the total order count
      */
     int getOrdersCount() {
         return orderLookup.size();
